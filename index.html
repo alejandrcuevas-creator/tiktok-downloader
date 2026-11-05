@@ -3,171 +3,623 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TikTok Downloader HD - Alejandro Cuevas</title>
+  <meta name="description" content="Descarga videos de TikTok sin marca de agua en alta definición. Rápido, gratis y fácil de usar.">
+  <meta name="theme-color" content="#0b0b10">
+  <title>TikTok Downloader HD · Alejandro Cuevas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0f0f12;
-      --card-bg: #18181c;
-      --accent-pink: #ff0050;
-      --accent-cyan: #00f2fe;
-      --text-main: #ffffff;
-      --text-sub: #a0a0ab;
-      --border: #2a2a30;
+      --bg: #0b0b10;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-strong: #15151c;
+      --border: rgba(255, 255, 255, 0.09);
+      --pink: #fe2c55;
+      --cyan: #25f4ee;
+      --green: #22c55e;
+      --text: #f5f5f7;
+      --muted: #9a9aa8;
+      --radius: 20px;
+      --grad: linear-gradient(135deg, var(--pink), var(--cyan));
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
     body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      display: flex;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .app-wrapper {
-      display: flex;
-      flex: 1;
-      width: 100%;
-      max-width: 1300px;
+    /* Fondo animado */
+    .bg-glow {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background:
+        radial-gradient(600px circle at 15% 10%, rgba(254, 44, 85, 0.18), transparent 60%),
+        radial-gradient(600px circle at 90% 85%, rgba(37, 244, 238, 0.14), transparent 60%);
+    }
+
+    .app {
+      max-width: 1200px;
       margin: 0 auto;
       min-height: 100vh;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 28px;
+      padding: 32px 24px;
     }
 
-    /* Panel Izquierdo / Perfil */
+    /* ---------- Sidebar ---------- */
     .sidebar {
-      width: 320px;
-      background: var(--card-bg);
-      border-right: 1px solid var(--border);
-      padding: 40px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      position: sticky; top: 32px;
+      align-self: start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 40px 24px 32px;
       text-align: center;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* El logo ya incluye el nombre, así que se muestra recortado en cuadrado */
+    .avatar-ring {
+      width: 100%; max-width: 270px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto 18px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #0e0e0e;
+      border: 1px solid var(--border);
+      box-shadow: 0 0 50px rgba(254, 44, 85, 0.25), 0 0 50px rgba(37, 244, 238, 0.18);
+      transition: transform .35s ease, box-shadow .35s ease;
+    }
+    .avatar-ring:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 60px rgba(254, 44, 85, 0.4), 0 0 60px rgba(37, 244, 238, 0.3);
     }
 
     .avatar-img {
-      width: 190px;
-      height: 190px;
-      border-radius: 50%;
+      width: 100%; height: 100%;
       object-fit: cover;
-      border: 4px solid var(--accent-cyan);
-      box-shadow: 0 0 25px rgba(0, 242, 254, 0.35), 0 0 15px rgba(255, 0, 80, 0.4);
-      margin-bottom: 20px;
-      transition: transform 0.3s ease;
+      object-position: center;
+      display: block;
     }
 
-    .avatar-img:hover {
-      transform: scale(1.03);
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; overflow: hidden;
+      clip: rect(0 0 0 0); white-space: nowrap;
     }
 
     .author-name {
-      font-size: 1.6rem;
-      font-weight: 700;
-      background: linear-gradient(45deg, var(--accent-cyan), var(--accent-pink));
-      -webkit-background-clip: text;
+      font-size: 1.55rem; font-weight: 800; letter-spacing: -0.3px;
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
-      letter-spacing: 0.5px;
+    }
+    .author-tag { color: var(--muted); font-size: .92rem; font-weight: 500; }
+
+    .badges {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+      margin-top: 22px;
+    }
+    .badge {
+      font-size: .74rem; font-weight: 600;
+      padding: 6px 12px; border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
     }
 
-    .author-tag {
-      color: var(--text-sub);
-      font-size: 0.95rem;
-      font-weight: 500;
+    .sidebar-stats {
+      margin-top: 26px; padding-top: 22px;
+      border-top: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
     }
+    .stat strong { display: block; font-size: 1.4rem; font-weight: 800; }
+    .stat span { font-size: .75rem; color: var(--muted); }
 
-    /* Contenido Principal / Derecha */
-    .main-content {
-      flex: 1;
-      padding: 50px 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
+    /* ---------- Main ---------- */
+    .main { display: flex; flex-direction: column; align-items: center; padding-top: 24px; min-width: 0; }
+
+    .header { text-align: center; margin-bottom: 36px; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: .78rem; font-weight: 600; color: var(--cyan);
+      background: rgba(37, 244, 238, .08);
+      border: 1px solid rgba(37, 244, 238, .25);
+      padding: 6px 14px; border-radius: 999px; margin-bottom: 18px;
     }
-
-    .header {
-      text-align: center;
-      margin-bottom: 35px;
+    .pill::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
     }
-
     .header h1 {
-      font-size: 2.3rem;
-      background: linear-gradient(45deg, var(--accent-pink), var(--accent-cyan));
-      -webkit-background-clip: text;
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      font-weight: 800; letter-spacing: -1px; line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .header h1 span {
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
     }
+    .header p { color: var(--muted); font-size: 1.05rem; max-width: 520px; margin: 0 auto; }
 
-    .header p {
-      color: var(--text-sub);
-      font-size: 1.05rem;
-    }
-
-    .search-container {
-      width: 100%;
-      max-width: 650px;
-    }
+    .panel { width: 100%; max-width: 680px; }
 
     .input-box {
-      background: var(--card-bg);
-      padding: 8px 8px 8px 20px;
-      border-radius: 50px;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface-strong);
       border: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-      margin-bottom: 30px;
-      box-shadow: 0 6px 25px rgba(0,0,0,0.5);
+      border-radius: 60px;
+      padding: 8px 8px 8px 22px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.45);
+      transition: border-color .2s, box-shadow .2s;
     }
-
+    .input-box:focus-within {
+      border-color: rgba(37, 244, 238, .55);
+      box-shadow: 0 10px 40px rgba(0,0,0,.45), 0 0 0 4px rgba(37, 244, 238, .08);
+    }
     .input-box input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #fff;
-      font-size: 1rem;
+      flex: 1; min-width: 0;
+      background: transparent; border: none; outline: none;
+      color: var(--text); font-size: 1rem; font-family: inherit;
+      padding: 10px 0;
     }
+    .input-box input::placeholder { color: #6b6b78; }
 
-    .input-box button {
-      background: linear-gradient(45deg, var(--accent-pink), #d60044);
-      border: none;
-      color: white;
-      padding: 14px 32px;
-      border-radius: 40px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1rem;
-      transition: opacity 0.2s, transform 0.2s;
-    }
-
-    .input-box button:hover {
-      opacity: 0.95;
-      transform: translateY(-1px);
-    }
-
-    .loading {
-      display: none;
-      text-align: center;
-      margin: 20px 0;
-      color: var(--accent-cyan);
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .result-card {
-      background: var(--card-bg);
-      border-radius: 20px;
+    .icon-btn {
+      background: rgba(255,255,255,.06);
       border: 1px solid var(--border);
-      padding: 25px;
-      display: none;
-      width: 100%;
-      max-width: 650px;
-      text-align: center;
-      box-shadow:
+      color: var(--muted);
+      font-family: inherit; font-size: .82rem; font-weight: 600;
+      padding: 10px 14px; border-radius: 40px; cursor: pointer;
+      transition: color .2s, background .2s;
+      white-space: nowrap;
+    }
+    .icon-btn:hover { color: var(--text); background: rgba(255,255,255,.12); }
+
+    .btn-search {
+      background: linear-gradient(135deg, var(--pink), #d8003f);
+      border: none; color: #fff;
+      font-family: inherit; font-weight: 700; font-size: 1rem;
+      padding: 14px 30px; border-radius: 50px; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(254, 44, 85, .4);
+      transition: transform .2s, box-shadow .2s, opacity .2s;
+    }
+    .btn-search:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(254, 44, 85, .5); }
+    .btn-search:active { transform: translateY(0); }
+    .btn-search:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    .hint { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 14px; }
+
+    /* Skeleton de carga */
+    .skeleton {
+      display: none; margin-top: 30px;
+      background: var(--surface-strong);
+      border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px;
+    }
+    .skeleton.show { display: block; }
+    .sk { border-radius: 12px; background: linear-gradient(90deg, #1d1d26 25%, #272733 50%, #1d1d26 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; }
+    .sk-video { height: 240px; margin-bottom: 18px; }
+    .sk-line { height: 16px; margin-bottom: 10px; }
+    .sk-line.short { width: 60%; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* Resultado */
+    .result-card {
+      display: none; margin-top: 30px;
+      background: var(--surface-strong);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.45);
+      animation: rise .45s ease both;
+    }
+    .result-card.show { display: block; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+    .author-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .author-row img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
+    .author-row .nick { font-weight: 700; font-size: .95rem; }
+    .author-row .handle { color: var(--muted); font-size: .8rem; }
+
+    .video-wrap {
+      background: #000; border-radius: 14px; overflow: hidden;
+      display: flex; justify-content: center; margin-bottom: 16px;
+    }
+    .video-preview { width: 100%; max-height: 460px; object-fit: contain; display: block; }
+
+    .video-title {
+      font-size: .98rem; line-height: 1.5; color: #e6e6ec;
+      margin-bottom: 16px; word-break: break-word;
+    }
+
+    .metrics { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .metric {
+      font-size: .78rem; font-weight: 600; color: var(--muted);
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      padding: 6px 12px; border-radius: 999px;
+    }
+
+    .btn-group { display: grid; gap: 12px; }
+    .btn-group.two { grid-template-columns: 1fr 1fr; }
+
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-family: inherit; font-weight: 700; font-size: .95rem;
+      padding: 15px 16px; border-radius: 14px; border: 1px solid transparent;
+      cursor: pointer; text-decoration: none; color: #fff;
+      transition: transform .2s, filter .2s, background .2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:disabled { opacity: .6; cursor: wait; transform: none; }
+    .btn-primary { background: linear-gradient(135deg, #16a34a, var(--green)); box-shadow: 0 8px 22px rgba(34, 197, 94, .28); }
+    .btn-hd { background: linear-gradient(135deg, var(--pink), #c2003a); box-shadow: 0 8px 22px rgba(254, 44, 85, .28); }
+    .btn-ghost { background: rgba(255,255,255,.06); border-color: var(--border); }
+    .btn-ghost:hover { background: rgba(255,255,255,.11); }
+
+    /* Historial */
+    .history { display: none; margin-top: 34px; }
+    .history.show { display: block; }
+    .history-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .history-head h3 { font-size: .95rem; font-weight: 700; }
+    .history-head button { background: none; border: none; color: var(--muted); font-family: inherit; font-size: .8rem; cursor: pointer; }
+    .history-head button:hover { color: var(--pink); }
+    .history-list { display: grid; gap: 8px; }
+    .history-item {
+      display: flex; align-items: center; gap: 12px; width: 100%;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 10px; cursor: pointer; text-align: left;
+      color: var(--text); font-family: inherit; transition: background .2s;
+    }
+    .history-item:hover { background: rgba(255,255,255,.08); }
+    .history-item img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: #000; flex-shrink: 0; }
+    .history-item span { font-size: .85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .legal {
+      margin-top: 40px; text-align: center; color: #6b6b78;
+      font-size: .76rem; line-height: 1.6; max-width: 560px;
+    }
+
+    /* Toast */
+    .toast-zone { position: fixed; top: 20px; right: 20px; z-index: 50; display: grid; gap: 10px; }
+    .toast {
+      min-width: 240px; max-width: 340px;
+      background: #1c1c26; border: 1px solid var(--border); border-left: 4px solid var(--cyan);
+      padding: 14px 16px; border-radius: 12px; font-size: .88rem;
+      box-shadow: 0 12px 30px rgba(0,0,0,.5);
+      animation: toastIn .3s ease both;
+    }
+    .toast.error { border-left-color: var(--pink); }
+    .toast.success { border-left-color: var(--green); }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+
+    .footer { text-align: center; color: #6b6b78; font-size: .8rem; padding: 10px 0 30px; grid-column: 1 / -1; }
+    .footer b { color: var(--muted); }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; padding: 18px 14px; gap: 20px; }
+      .sidebar { position: static; padding: 28px 20px; }
+      .avatar-ring { max-width: 220px; }
+      .main { padding-top: 0; }
+      .toast-zone { left: 14px; right: 14px; top: 14px; }
+      .toast { max-width: none; }
+    }
+    @media (max-width: 520px) {
+      .input-box { border-radius: 24px; flex-wrap: wrap; padding: 12px; }
+      .input-box input { width: 100%; flex-basis: 100%; padding: 6px 4px 10px; }
+      .input-box .icon-btn { flex: 1; }
+      .btn-search { flex: 2; }
+      .btn-group.two { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="toast-zone" id="toasts" aria-live="polite"></div>
+
+  <div class="app">
+    <!-- Perfil -->
+    <aside class="sidebar">
+      <div class="avatar-ring">
+        <img src="logo.png" alt="Alejandro Cuevas" class="avatar-img" id="avatar">
+      </div>
+      <h2 class="sr-only">Alejandro Cuevas</h2>
+      <span class="author-tag">Creador del Proyecto</span>
+
+      <div class="badges">
+        <span class="badge">Desarrollo Web</span>
+        <span class="badge">JavaScript</span>
+        <span class="badge">Colombia 🇨🇴</span>
+      </div>
+
+      <div class="sidebar-stats">
+        <div class="stat"><strong id="counter">0</strong><span>Descargas tuyas</span></div>
+        <div class="stat"><strong>HD</strong><span>Sin marca de agua</span></div>
+      </div>
+    </aside>
+
+    <!-- Descargador -->
+    <main class="main">
+      <header class="header">
+        <div class="pill">Rápido · Gratis · Sin registro</div>
+        <h1>TikTok Downloader <span>HD</span></h1>
+        <p>Pega el enlace de cualquier video público y descárgalo sin marca de agua en alta definición.</p>
+      </header>
+
+      <section class="panel">
+        <form class="input-box" id="form" autocomplete="off">
+          <input type="url" id="videoUrl" placeholder="https://www.tiktok.com/@usuario/video/..." aria-label="Enlace del video de TikTok" required>
+          <button type="button" class="icon-btn" id="pasteBtn" title="Pegar desde el portapapeles">Pegar</button>
+          <button type="submit" class="btn-search" id="searchBtn">Buscar</button>
+        </form>
+        <p class="hint">Funciona con enlaces tiktok.com, vm.tiktok.com y vt.tiktok.com</p>
+
+        <div class="skeleton" id="skeleton" aria-hidden="true">
+          <div class="sk sk-video"></div>
+          <div class="sk sk-line"></div>
+          <div class="sk sk-line short"></div>
+        </div>
+
+        <article class="result-card" id="resultCard">
+          <div class="author-row">
+            <img id="authorAvatar" alt="" src="">
+            <div>
+              <div class="nick" id="authorNick"></div>
+              <div class="handle" id="authorHandle"></div>
+            </div>
+          </div>
+
+          <div class="video-wrap">
+            <video id="videoPreview" class="video-preview" controls playsinline preload="metadata"></video>
+          </div>
+
+          <p class="video-title" id="videoTitle"></p>
+          <div class="metrics" id="metrics"></div>
+
+          <div class="btn-group">
+            <div class="btn-group two">
+              <button class="btn btn-primary" id="dlNoWm">⬇ Video sin marca de agua</button>
+              <button class="btn btn-hd" id="dlHd">✨ Descargar en HD</button>
+            </div>
+            <button class="btn btn-ghost" id="dlAudio">🎵 Descargar solo audio (MP3)</button>
+          </div>
+        </article>
+
+        <section class="history" id="history">
+          <div class="history-head">
+            <h3>Búsquedas recientes</h3>
+            <button type="button" id="clearHistory">Borrar historial</button>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+
+        <p class="legal">
+          Descarga únicamente contenido propio o con permiso de su creador. Respeta los derechos de autor
+          y las condiciones de uso de TikTok. Este proyecto no está afiliado a TikTok.
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer">Hecho con ❤️ por <b>Alejandro Cuevas</b> · <span id="year"></span></footer>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const API = 'https://www.tikwm.com';
+      const $ = (id) => document.getElementById(id);
+
+      const els = {
+        form: $('form'), input: $('videoUrl'), search: $('searchBtn'), paste: $('pasteBtn'),
+        skeleton: $('skeleton'), card: $('resultCard'), video: $('videoPreview'),
+        title: $('videoTitle'), metrics: $('metrics'),
+        authorAvatar: $('authorAvatar'), authorNick: $('authorNick'), authorHandle: $('authorHandle'),
+        dlNoWm: $('dlNoWm'), dlHd: $('dlHd'), dlAudio: $('dlAudio'),
+        history: $('history'), historyList: $('historyList'), clearHistory: $('clearHistory'),
+        counter: $('counter'), toasts: $('toasts'), avatar: $('avatar'), year: $('year')
+      };
+
+      let current = null; // datos del video actual
+
+      /* ---------- Utilidades ---------- */
+      const store = {
+        get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+        set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* ignorar */ } }
+      };
+
+      const abs = (u) => !u ? '' : u.startsWith('http') ? u : API + u;
+
+      const fmt = (n) => {
+        n = Number(n) || 0;
+        if (n >= 1e6) return (n / 1e6).toFixed(1).replace('.0', '') + 'M';
+        if (n >= 1e3) return (n / 1e3).toFixed(1).replace('.0', '') + 'K';
+        return String(n);
+      };
+
+      const isTikTok = (u) => {
+        try {
+          const h = new URL(u).hostname.replace(/^www\./, '');
+          return h === 'tiktok.com' || h.endsWith('.tiktok.com');
+        } catch { return false; }
+      };
+
+      function toast(msg, type = 'info', ms = 3800) {
+        const t = document.createElement('div');
+        t.className = 'toast ' + type;
+        t.textContent = msg;
+        els.toasts.appendChild(t);
+        setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, ms);
+      }
+
+      function setLoading(on) {
+        els.search.disabled = on;
+        els.search.textContent = on ? 'Buscando…' : 'Buscar';
+        els.skeleton.classList.toggle('show', on);
+        if (on) els.card.classList.remove('show');
+      }
+
+      /* ---------- Avatar con respaldo ---------- */
+      els.avatar.addEventListener('error', () => {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="190" height="190"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fe2c55"/><stop offset="1" stop-color="#25f4ee"/></linearGradient></defs><rect width="190" height="190" fill="url(#g)"/><text x="50%" y="56%" font-family="Arial" font-weight="800" font-size="72" fill="#fff" text-anchor="middle" dominant-baseline="middle">AC</text></svg>`;
+        els.avatar.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+      }, { once: true });
+
+      /* ---------- Descarga real (blob) con respaldo ---------- */
+      async function download(url, filename, btn) {
+        if (!url) return toast('Este archivo no está disponible.', 'error');
+        const label = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Descargando…';
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const blob = await res.blob();
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+          bumpCounter();
+          toast('¡Descarga completada!', 'success');
+        } catch {
+          // Si el navegador bloquea la descarga directa, abrimos el archivo en otra pestaña
+          window.open(url, '_blank', 'noopener');
+          toast('Se abrió el archivo en otra pestaña. Mantén presionado para guardarlo.', 'info', 5000);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = label;
+        }
+      }
+
+      function bumpCounter() {
+        const n = store.get('dl_count', 0) + 1;
+        store.set('dl_count', n);
+        els.counter.textContent = n;
+      }
+
+      /* ---------- Historial ---------- */
+      function renderHistory() {
+        const list = store.get('dl_history', []);
+        els.historyList.replaceChildren();
+        els.history.classList.toggle('show', list.length > 0);
+        list.forEach((item) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'history-item';
+          const img = document.createElement('img');
+          img.src = item.cover || ''; img.alt = ''; img.loading = 'lazy';
+          const span = document.createElement('span');
+          span.textContent = item.title || item.url;
+          b.append(img, span);
+          b.addEventListener('click', () => { els.input.value = item.url; els.form.requestSubmit(); });
+          els.historyList.appendChild(b);
+        });
+      }
+
+      function saveHistory(url, d) {
+        const list = store.get('dl_history', []).filter((i) => i.url !== url);
+        list.unshift({ url, title: (d.title || 'Video de TikTok').slice(0, 80), cover: abs(d.cover) });
+        store.set('dl_history', list.slice(0, 5));
+        renderHistory();
+      }
+
+      els.clearHistory.addEventListener('click', () => { store.set('dl_history', []); renderHistory(); toast('Historial borrado.'); });
+
+      /* ---------- Buscar video ---------- */
+      async function fetchVideo(url) {
+        setLoading(true);
+        try {
+          const res = await fetch(`${API}/api/?url=${encodeURIComponent(url)}&hd=1`);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const json = await res.json();
+          if (json.code !== 0 || !json.data) throw new Error(json.msg || 'sin datos');
+          showResult(json.data);
+          saveHistory(url, json.data);
+        } catch (err) {
+          const offline = !navigator.onLine;
+          toast(offline ? 'Sin conexión a internet.' : 'No se pudo obtener el video. Verifica que el enlace sea público e inténtalo de nuevo.', 'error', 5000);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      function showResult(d) {
+        current = {
+          play: abs(d.play),
+          hd: abs(d.hdplay || d.play),
+          music: abs(d.music),
+          id: d.id || Date.now()
+        };
+
+        els.video.src = current.play;
+        els.video.poster = abs(d.cover);
+        els.title.textContent = d.title || 'Video de TikTok';
+
+        const au = d.author || {};
+        els.authorAvatar.src = abs(au.avatar);
+        els.authorNick.textContent = au.nickname || 'Usuario de TikTok';
+        els.authorHandle.textContent = au.unique_id ? '@' + au.unique_id : '';
+
+        els.metrics.replaceChildren();
+        [
+          ['👁', d.play_count], ['❤️', d.digg_count], ['💬', d.comment_count], ['↗', d.share_count]
+        ].forEach(([icon, n]) => {
+          if (n === undefined) return;
+          const s = document.createElement('span');
+          s.className = 'metric';
+          s.textContent = `${icon} ${fmt(n)}`;
+          els.metrics.appendChild(s);
+        });
+
+        els.dlHd.style.display = d.hdplay ? '' : 'none';
+        els.card.classList.add('show');
+        els.card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      /* ---------- Eventos ---------- */
+      els.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const url = els.input.value.trim();
+        if (!url) return toast('Pega primero un enlace de TikTok.', 'error');
+        if (!isTikTok(url)) return toast('Ese enlace no parece ser de TikTok.', 'error');
+        fetchVideo(url);
+      });
+
+      els.paste.addEventListener('click', async () => {
+        try {
+          const text = await navigator.clipboard.readText();
+          if (!text) return toast('El portapapeles está vacío.');
+          els.input.value = text.trim();
+          els.input.focus();
+        } catch {
+          toast('No se pudo acceder al portapapeles. Pega el enlace manualmente.', 'error');
+        }
+      });
+
+      els.dlNoWm.addEventListener('click', () => current && download(current.play, `tiktok-${current.id}.mp4`, els.dlNoWm));
+      els.dlHd.addEventListener('click', () => current && download(current.hd, `tiktok-${current.id}-hd.mp4`, els.dlHd));
+      els.dlAudio.addEventListener('click', () => current && download(current.music, `tiktok-${current.id}.mp3`, els.dlAudio));
+
+      /* ---------- Inicio ---------- */
+      els.counter.textContent = store.get('dl_count', 0);
+      els.year.textContent = new Date().getFullYear();
+      renderHistory();
+    })();
+  </script>
+</body>
+</html>
